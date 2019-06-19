@@ -184,7 +184,7 @@ Ao fim desse período, é realizado uma ordenação sobre a lista de mensagens d
 
 As mensagens são exibidas da seguinte forma:
 
-    \[Data de Envio - Data de Chegada\] Nome de usuário: Corpo da mensagem
+    [Data de Envio - Data de Chegada] Nome de usuário: Corpo da mensagem
     
 **Obs**: No caso de mensagens do sistem o nome de usuário é substituído por *Server Message* e o corpo trata-se de uma mensagem predefinida.
 
