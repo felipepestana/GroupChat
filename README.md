@@ -186,7 +186,7 @@ As mensagens são exibidas da seguinte forma:
 
     [Data de Envio - Data de Chegada] Nome de usuário: Corpo da mensagem
     
-**Obs**: No caso de mensagens do sistem o nome de usuário é substituído por *Server Message* e o corpo trata-se de uma mensagem predefinida.
+**Obs**: No caso de mensagens marcadas como vindas do servidor do sistema, o nome de usuário é substituído por *Server Message* e o corpo trata-se de uma mensagem predefinida.
 
 **Obs2**: Para facilitar exibição e comparação, todas as datas são formatadas da seguinte forma: dd/MM/yyyy HH:mm:ss.SSS
 
