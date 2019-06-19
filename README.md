@@ -9,7 +9,7 @@ Esse projeto consiste de um sistema de mensagens curtas visando estabelecer um c
 
 * Um cliente, presente dentro do diretório GroupChatClient;
 * Um servidor, presente dentro do diretório GroupChatServer;
-* Um classe para gerência do Registro RMI necessário, presente dentro do diretório GroupCharRMI.
+* Um classe para gerência do Registro RMI necessário, presente dentro do diretório GroupChatRMI.
  
 Além disso, temos algumas classes de suporte compartilhadas e utilizados por mais de um desses processos, arquivos de configurações individuais para cada módulo e scripts utilizados para inicialização e compilação adequada dos códigos e execução individual de cada processo principal.
 
@@ -70,15 +70,65 @@ Esse arquivo é organizado em uma estrutura de chave e valor, semelhante a um di
 
 Observou-se a necessidade de definir três parâmetros diferentes para execução:
 
-1. Endereço Ip Multicast: Utilizado somente pelo processo Servidor para o envio e recebimento de mensagens via Multicast. Definido atualmente como *230.0.0.19* ;
+1. Endereço Ip Multicast ('multicastIP'): Utilizado somente pelo processo Servidor para o envio e recebimento de mensagens via Multicast. Definido atualmente como *230.0.0.19* ;
 
-2. Número de porta para Multicast: Também presesnte somente na configuração do processo Servidor para a passagem de informações via Sockets. Definido atualmente como *9819* ;
+2. Número de porta para Multicast ('multicastPort'): Também presesnte somente na configuração do processo Servidor para a passagem de informações via Sockets. Definido atualmente como *9819* ;
 
-3. Número de porta para o Registro RMI: Utilizado pelo processo gerenciador do Registro para inicializá-lo dentro dessa porta predefinida e pelos demais processo, Clientes e Servidor, para acessar o Registro criado. Atualmente definido como *9919* .
+3. Número de porta para o Registro RMI ('registryPort'): Utilizado pelo processo gerenciador do Registro para inicializá-lo dentro dessa porta predefinida e pelos demais processo, Clientes e Servidor, para acessar o Registro criado. Atualmente definido como *9919* .
 
 ## Descrição individual de cada Módulo e decisões de Design
 
-Esse tópico
-### RMIRegistryManager
-### Servidor
-### Cliente
+Esse tópico detalha as organizações internas de cada um dos módulos definidos anteriormente e trabalha algumas decisões de Design adotadas durante a elaboração desse projeto.
+
+A estruturação geral desse projeto busca a definição de programas, que, embora necessitam ser rodados em conjunto para a execução de fato do objetivo proposto, possuam suas separações bem definidas de acordo com as funções atribuídas a cada um deles.  
+
+### Classes compartilhadas
+
+Neste tópico, temos as classes que funcionam como interfaces a serem utilizadas para comunicação entre diferentes tipos de processos ou que encapsulam métodos e buscam fornecer funcionalidades que podem ser aplicadas e reaproveitadas em diversas etapas do projeto. Todas as classe definidas aqui devem estar presentes para a execução de cada um dos módulos do programa.
+
+#### Message.java
+
+Essa classe, busca simplesmente agrupar os campos que devem estar presentes em uma mensagem a ser enviada e propagada dentro desse Chat, agrupando-os dentro da estrutura de um Objeto. Além de definir um construtor padrão para a classe, possui também os seguintes campos definidos:
+
+* Username: String contendo a identificação de quem enviou;
+
+* Body: String contendo o conteúdo (corpo) da mensagem;
+
+* SendDate: Variável do tipo Date, inicializado no momento de envio da mensagem;
+
+* receiveDate: Variável do tipo Date, atribuída no momento de recebimento da mensagem pelo cliente final;  
+
+* isSystemMessage: Variável do tipo Booleano que identifica se a mensagem se trata ou não de uma definida e enviada por um Servidor gerenciador do Chat.
+
+#### ServerInterface.java
+
+Define as assinaturas dos métodos a serem oferecidos pela parte *Servidor RMI* dentro do processo de Servidor do Chat. Essa interface deve ser compilada e estar presente na execução de todos os processos que se utilizarem da comunicação por RMI com esse processo ou que interajam com o Registo local RMI. 
+
+Possibilita a chamada das seguintes funções via comunicação RMI:
+
+* sendMessage: Recebe um objeto do tipo **Mensagem** ;
+
+* logIn: Recebe o nome do usuário que entrou na sala e informações de data e horário relativos a esse acontecimento. Retorna um inteiro identificador do usuário que está se conectando.
+
+* logOff: Recebe os mesmo parâmetros do método anterior, nome de usuário e data/horário do momento de chamada da função. Não retorna informação.
+
+#### ClientInterface.java
+
+Semelhante ao anterior, porém define agora as assinaturas dos métodos a serem oferecidos pela parte *Servidor RMI* dentro do processo de Cliente do Chat. Novamente, essa interface deve ser compilada e estar presente na execução de todos os processos que se utilizarem da comunicação por RMI com o processo Cliente ou que interajam com o Registo local RMI. 
+
+Possibilita a chamada somente de uma única função via comunicação RMI com esse módulo:
+
+* printMessage: Recebe um objeto do tipo **Mensagem** como parâmetro de entrada.
+
+#### GetConfig.java
+
+Essa classe, encapsula funcionalidades de abertura e leitura de arquivos de configuração como os definidos anteriormente ( do tipo *.properties*), oferecendo abstrações e métodos que facilitam o acesso e a obtenção de determinados valores presentes neles. Ela foi desenvolvida buscando generalizar operações de acessos a arquivos externos que estavam presente de forma semelhante em todos os processos principais do projeto.
+
+Seu construtor recebe como parâmetro o nome do arquivo a ser procurado dentro dos ClassPath definidos em tempo de execução, buscando salvar dentro de uma variável interna do objeto de tipo Properties as informações encontradas dentro dele. Essas informações podem então ser exibidas através da chamada de um método GetProperties, que recebe uma string contendo a chave identificadora a qual se deseja consultar e retorna o seu valor associado encontrado no arquivo. 
+
+### GroupChatRMI
+
+### GroupChatServer
+
+### GroupChatClient
+
