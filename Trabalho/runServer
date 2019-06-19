@@ -1,0 +1,3 @@
+#!/bin/bash
+echo Begin Running...
+java -cp "./GroupChatServer/resources/:./GroupChatServer/bin/:./Stubs" RunServer

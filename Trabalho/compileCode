@@ -1,0 +1,18 @@
+#!/bin/bash
+echo Compiling...
+
+javac -d "./GroupChatClient/bin" -cp "./GroupChatClient/src" ./GroupChatClient/src/*.java
+echo Client compiled
+
+javac -d "./GroupChatServer/bin" -cp "./GroupChatServer/src" ./GroupChatServer/src/*.java
+echo Server compiled
+
+javac -d "./GroupChatRMI/bin" -cp "./GroupChatRMI/src" ./GroupChatRMI/src/*.java 
+
+echo "Classes for RMI compiled"
+
+(rmic -d "./Stubs" -classpath "./GroupChatServer/bin" ChatServer ) &>/dev/null
+(rmic -d "./Stubs" -classpath "./GroupChatClient/bin" ChatClient) &>/dev/null
+echo Stubs created
+	
+echo Done
