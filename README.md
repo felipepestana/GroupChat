@@ -37,7 +37,7 @@ No diretório principal do trabalho, encontram-se, além das pastas descritas an
 
 Todos os arquivos necessários já se encontram previamente compilados, podendo ser facilmente recompilados pelo processo descrito a seguir se desejado. Atualmente, todos os Scripts possuem as devidas permissões para serem executados dentro da pasta de usuário.
 
-### Compilação e preparação do código
+### Compilação e preparação dos códigos
 
 Para compilação de todos os códigos necessários, assim como geração das classes Stubs para o RMI, basta navegar para o diretório Trabalho citado e executar o script CompileCode através do comando abaixo:
 
