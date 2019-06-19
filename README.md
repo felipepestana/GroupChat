@@ -183,8 +183,11 @@ Na execução do método de printMessage, é passado como parâmetro de entrada 
 Ao fim desse período, é realizado uma ordenação sobre a lista de mensagens disponíveis, através de um Comparator definido internamente na função que ordena as mensagens de forma crescente a partir da sua data de envio. Esse sort é executado dentro uma sincronização externa da lista, visando garantir que não ocorra problemas com outras rotinas em execução, já que essas operações podem vir a causar problemas de paralelismo. O elemento mais antigo é então extraído da lista, sua mensagem é formatada, juntando seus campos em uma única String que é então exibida na tela.
 
 As mensagens são exibidas da seguinte forma:
-  \[Data de Envio - Data de Chegada\] Nome de usuário: Corpo da mensagem
+
+    \[Data de Envio - Data de Chegada\] Nome de usuário: Corpo da mensagem
+    
 **Obs**: No caso de mensagens do sistem o nome de usuário é substituído por *Server Message* e o corpo trata-se de uma mensagem predefinida.
+
 **Obs2**: Para facilitar exibição e comparação, todas as datas são formatadas da seguinte forma: dd/MM/yyyy HH:mm:ss.SSS
 
 A utilização dessa lista sincronizada e do seu processo de ordenação dentro desse método é uma tentativa de implementar uma solução para a **questão bônus 1** definida no enunciado da lista. Para isso, busca-se aguardar um tempo para que mensagens atrasadas possam ter tempo de chegar e ser inseridas na lista, garantingo sempre que na hora da impressão final do conteúdo, a mensagem a ser impressa seja aquela que tenha sido enviada a mais tempo. Dessa forma, espera-se que, supondo que todas as mensagens consigam chegar dentro desse período de tempo determinado, a ordem de exibição seria a mesma para qualquer cliente. Além disso, se pudessemos garantir que todos os relógios estejam corretamente sincronizados, todas as mensagens seriam exibidas na ordem de correta de envio.
