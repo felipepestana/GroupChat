@@ -128,7 +128,45 @@ Seu construtor recebe como parâmetro o nome do arquivo a ser procurado dentro d
 
 ### GroupChatRMI
 
+O mais simples dos módulos, foi desenvolvido visando separar a execução e inicialização do RMI Registry local, necessário a execução do programa, dos demais componentes. Apesar do mesmo poder ser gerado dentro do mesmo processo principal do Servidor, até porque este registro deve estar rodando para que este possa ser executado corretamente, optou-se por instanciá-lo separadamente, de forma a deixar claro que trata-se de um serviço separado e que pode funcionar sem a existência de um servidor para outras aplicações. 
+
+Ao mesmo tempo, ao invés de simplesmente utilizar a chamada de estabelecimento do registro através da chamada de execução via prompt *rmiregistry portNumber*, buscou-se utilizar dos recursos já desenvolvidos em Java para leitura de arquivos de configuração. Além disso, se adicionou uma funcionalidade de um **ShutdownHook** a ser executado no momento de encerramento dessa aplicação, garantindo a interrupção correta da sua execução em caso de encerramento do programa, o que inclui a realização de um unexport do objeto remoto de Registro e encerramento do loop de execução que mantinha o Registro funcionando e acessível as demais aplicações.
+
+#### RunRegistry.java
+
+Como descrito, essa classe possui apenas a leitura do arquivo de configuração, a inicialização do registro e a manuntenção de um loop que o mantenha aberto até que uma interrupção o encerre, além dos devidos tratamentos de erros e mensagens de comunicação. Necessita ter acesso as interfaces a serem exportadas no registro e pode ser corretamente encerrada no prompt através do comando **Ctrl + c**
+
 ### GroupChatServer
 
+Passando de fato agora para as implementações principais do projeto, temos agora as classes relativas a parte Servidor do serviço de Chat em grupo. Esse módulo se utiliza tanto da comunicação via Sockets Multicast, para propagar inforamções para e receber dados de servidores que estão executando em diversas máquinas diferentes, como também do middleware RMI para realizar a troca de mensagens entre os clientes que estão em execução dentro da mesma máquina. Somente uma instância desse módulo deve estar ativa ao mesmo tempo dentro de uma mesma máquina.
+
+Essa aplicação é divida em duas classes diferentes: uma responsável por atuar como a parte *servidor* de mensagens vindas através do  socket Multicast e *cliente* via RMI, e a outra como *servidor* via chamadas RMI vinda de Clientes e *cliente* no envio de mensagens via canais Multicast.
+
+#### ChatServer.java
+
+Essa classe é responsável por implementar a InterfaceServer definida anteriormente, oferecendo implementações para os métodos fornecidos por esta via chamadas RMI, além de executar o envio de mensagens via Socket Multicast. Possui como variáveis internas um valor de IP Multicast, um Socket utilizado para comunicação e o número de porta onde está inicializado o RegistroRMI.
+
+Essa classe implementa uma nova função conhecida como BroadcastMessage, que recebe um objeto do tipo Mensagem e simplesmente o encaminha para todos os processos que estão escutando no endereço definido pelo IP e pela porta passados como parâmetro no momento de criação e exportação da classe remota. Foi definido um valor máximo de tentativas, para tentar novamente no caso de ocorrer alguma exceção no momento de envio dessa mensagem.
+
+Além disso, essa classe implementa todas as funções definidas anteriormente pela interface. Para o caso de sendMessage, ela simplesmente executa o broadcast da mensagem. Já no caso de logOff, ela define uma mensagem padrão de saída do sistema a ser enviada aos demais participantes. O mesmo ocorre no caso de logIn, só que com uma mensagem de entrada. Além disso, nessa função optou-se por retornar um inteiro identificador diretamente ao cliente como parâmetro de retorno, para que esse possa por sua vez realizar o seu registro dentro do RMIRegistry local com um endereço único, composto do prefixo "Client" + esse valor de retorno. Para garantir que esse valor seja único, o servidor obtém a lista de todos os participantes presentes nesse registro e verifica o menor número ainda não utilizado.
+
+É utilizada como base para a geração de Server Stubs e a cada execução de um desses métodos remotos, uma mensagem de log é gerada no prompt para acompanhamento das requisições.
+
+#### RunServer.java
+
+Esse código representa a classe principal para execução dos Servidores desse serviço de Chat criado, sendo responsável pela inicialização das conexões e dos objetos remotos, além de atuar como servidor recebedor de mensagens via Socket e cliente de chamadas RMI para os Clientes do chat.
+
+Ela se inicia utilizando-se das funções padrões de leituras do arquivo de configuração, com seus devidos tratamentos de erros. Em seguida, ela executa uma conexão ao endereço de Multicast definido nos parâmetros, definindo um objeto do tipo Socket e se juntando ao grupo que está se utilizando desse serviço. 
+
+Para encerrar a etapa de inicialização, a aplicação verifica a existência do registro RMI na porta passada, define um objeto do tipo *ChatServer*, passando os parâmetros necessários e configurados do arquivo extra de properties, e o exporta sobre o endereço adequadamente e explicitamente definido para evitar erros durante a execução. Todas essas etapas são acompanhadas por usas próprias mensagens de erro e verificações particuçares.
+
+Além disso, é definido um ShutdownHook próprio a ser executado no momento de interrupção desse Servidor. Essa rotina, irá encerrar corretamente a participação desse processo no grupo referente ao Socket Multicast definido, irá remover o objeto remoto exportado do registro de endereços RMI local e por último notificar o Status de saída. Novamente, o processo pode ser corretamente encerrada no prompt através do comando **Ctrl + c**.
+
+Por último a rotina principal do programa, irá executar um loop indefinidamente, escutando e esperando receber novas mensagens via a conexão criada através do Socket anteriormente, devendo no caso do recebimento, extrair os bytes recebidos por essa conexão. Ela deve então tentar interpretar esses dados recebidos como um objeto do tipo Mensagem, devendo gerar uma mensagem de erro no caso de não conseguir. Caso seja bem sucedida, ela inicia então uma nova Thread que deve se responsabilizar pelo envio dessa mensagem para os processos Clientes, passando essa mensagem recebida a ela e voltando a escutar, aguardando novas mensagens.
+
+Essas Threads são definidas dentro de uma classe interna denominada ListenThread, que possuem em seu método principal run(), a ser executado paralelamente, o objetivo de encaminhar uma mensagem a todos os Clientes do Chat em grupo registrados naquela máquina. Para isso, essa função recupera todos os valores presentes no Registro RMI local, e para cada entrada que possua o identificador Cliente, ele recupera seu endereço exportado. Com esse endereço conhecido, ele pode então importar uma referência ao objeto remoto que atua como *servidor RMI do cliente* e realiza a chamada do seu método printMessage, passando o objeto Mensagem recebido como parâmetro. Esse processo é realizado para todos os Clientes encontrados no registro, com o devido número máximo de tentativas e tratamentos de erros.
+
 ### GroupChatClient
+
+
 
