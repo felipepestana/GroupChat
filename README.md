@@ -138,7 +138,7 @@ Como descrito, essa classe possui apenas a leitura do arquivo de configuração,
 
 ### GroupChatServer
 
-Passando de fato agora para as implementações principais do projeto, temos agora as classes relativas a parte Servidor do serviço de Chat em grupo. Esse módulo se utiliza tanto da comunicação via Sockets Multicast, para propagar inforamções para e receber dados de servidores que estão executando em diversas máquinas diferentes, como também do middleware RMI para realizar a troca de mensagens entre os clientes que estão em execução dentro da mesma máquina. Somente uma instância desse módulo deve estar ativa ao mesmo tempo dentro de uma mesma máquina.
+Passando agora de fato para as implementações principais do projeto, temos nesse tópico as classes relativas a parte Servidor do serviço de Chat em grupo. Esse módulo se utiliza tanto da comunicação via Sockets Multicast, para propagar informações para e receber dados de servidores que estão executando em diversas máquinas diferentes, como também do middleware RMI para realizar a troca de mensagens com  os clientes que estão em execução dentro da mesma máquina. Somente uma instância desse módulo deve estar ativa ao mesmo tempo dentro de uma mesma máquina.
 
 Essa aplicação é divida em duas classes diferentes: uma responsável por atuar como a parte *servidor* de mensagens vindas através do  socket Multicast e *cliente* via RMI, e a outra como *servidor* via chamadas RMI vinda de Clientes e *cliente* no envio de mensagens via canais Multicast.
 
@@ -154,7 +154,7 @@ Além disso, essa classe implementa todas as funções definidas anteriormente p
 
 #### RunServer.java
 
-Esse código representa a classe principal para execução dos Servidores desse serviço de Chat criado, sendo responsável pela inicialização das conexões e dos objetos remotos, além de atuar como servidor recebedor de mensagens via Socket e cliente de chamadas RMI para os Clientes do chat.
+Esse código representa a classe principal, com o método main, para execução dos Servidores desse serviço de Chat criado, sendo responsável pela inicialização das conexões e dos objetos remotos, além de atuar como servidor recebedor de mensagens via Socket e cliente de chamadas RMI para os Clientes do chat.
 
 Ela se inicia utilizando-se das funções padrões de leituras do arquivo de configuração, com seus devidos tratamentos de erros. Em seguida, ela executa uma conexão ao endereço de Multicast definido nos parâmetros, definindo um objeto do tipo Socket e se juntando ao grupo que está se utilizando desse serviço. 
 
@@ -168,5 +168,22 @@ Essas Threads são definidas dentro de uma classe interna denominada ListenThrea
 
 ### GroupChatClient
 
+Esse módulo do Cliente desse serviço de Chat em Grupo, possui uma arquitetura geral similar a definida para um Servidor, com uma classe representando a parte que atua como *servidor RMI*, implementando uma interface a agindo como um objeto remoto e a outra atuando como a parte principal da inicialização, inclusive contendo o método main a ser iniciado e parte *cliente do RMI*. 
 
+Porém, ao contrário do caso anterior, esse Cliente só se utiliza da comunicação via RMI e interage somente com o servidor local, que esteja presente dentro do mesmo servidor de resgistros locais. Além disso, um total de n diferentes instâncias desse processo podem estar em execução ao mesmo tempo em uma mesma máquina.
 
+#### ChatClient.java
+
+Essa é a classe do Cliente responsável que implementa a interface Client definida anteriormente, e, que portanto, oferece uma implementação para o assinatura de método definido dentro da mesma.
+
+Nesse caso, como variável interna ao objeto, ela possui uma lista de objetos do tipo Mensagem e que se trata de um ArrayList sincronizado, ou seja, que é compartilhada por todas as instâncias de threads que tentam acessar o objeto exportado, as quais são geradas por diferentes chamadas RMI ao método de um mesmo objeto, e que deve ter sua operações de acesso sincronizadas, garatindo a execução correta de operações pontuais sobre ela mesmo em chamadas que operam de forma paralela. Essa lista é utilizada para armazenar Mensagens recebidas durante a execução do método remoto.
+
+Na execução do método de printMessage, é passado como parâmetro de entrada um objeto do tipo Mensagem que deve ter suas informações impressas na prompt de comando do usuário onde o processo Cliente está executando. Para isso, o valor do campo receiveDate é atribuído a mensagem no momento de seu recebimento pela chamada e em seguida essa mensagem é adicionada a lista de Mensagens internas desse objeto. A rotina que está a executar essa função para sua execução então por um intervalo de tempo de algun milisegundos, definido arbitrariamente. 
+
+Ao fim desse período, é realizado uma ordenação sobre a lista de mensagens disponíveis, através de um Comparator definido internamente na função que ordena as mensagens de forma crescente a partir da sua data de envio. Esse sort é executado dentro uma sincronização externa da lista, visando garantir que não ocorra problemas com outras rotinas em execução, já que essas operações podem vir a causar problemas de paralelismo. O elemento mais antigo é então extraído da lista, sua mensagem é formatada, juntando seus campos em uma única String que é então exibida na tela.
+
+A utilização dessa lista sincronizada e do seu processo de ordenação dentro desse método é uma tentativa de implementar uma solução para a **questão bônus 1** definida no enunciado da lista. Para isso, busca-se aguardar um tempo para que mensagens atrasadas possam ter tempo de chegar e ser inseridas na lista, garantingo sempre que na hora da impressão final do conteúdo, a mensagem a ser impressa seja aquela que tenha sido enviada a mais tempo. Dessa forma, espera-se que, supondo que todas as mensagens consigam chegar dentro desse período de tempo determinado, a ordem de exibição seria a mesma para qualquer cliente. Além disso, se pudessemos garantir que todos os relógios estejam corretamente sincronizados, todas as mensagens seriam exibidas na ordem de correta de envio.
+
+#### RunClient.java
+
+Por último, temos a classe principal responsável pela instanciação do Cliente
