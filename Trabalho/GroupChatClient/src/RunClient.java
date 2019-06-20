@@ -72,7 +72,8 @@ public class RunClient
             try
             {
 				String messageBody = scan.nextLine();
-				System.out.print("\033[1A");
+				System.out.print("\033[1A"); // Move cursor up
+				System.out.print("\033[2K"); // Erase current line
 
                 if(messageBody.equals(terminate))
                 {

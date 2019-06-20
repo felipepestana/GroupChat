@@ -24,7 +24,7 @@ public class GetConfig
         }
         catch(FileNotFoundException ex)
         {
-            System.out.println("Exception thrown: " + ex);
+            System.out.println("Exception thrown: " + ex.getMessage());
         }
         catch(Exception ex)
         {
