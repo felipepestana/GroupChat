@@ -57,7 +57,7 @@ public class RunClient
             rmiAddress = "rmi://localhost:" + registryPort + "/Client" + String.format("%02d",id);
             Naming.rebind(rmiAddress, client);
             System.out.println("Connected. Type message '/exit' at any moment to exit chat room...");
-			System.out.println("Begin chatting:");
+            System.out.println("Begin chatting:");
         }
         catch (Exception ex)
         {
@@ -103,7 +103,7 @@ public class RunClient
         catch(Exception ex)
         {
             System.out.println("Error when trying to execute proper shutdown. Exiting anyway...");
-		}
+        }
         System.exit(0);
     }    
 }

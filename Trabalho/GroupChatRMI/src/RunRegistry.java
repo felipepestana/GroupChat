@@ -4,7 +4,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class RunRegistry 
 {
-	public static Registry reg = null;
+    public static Registry reg = null;
     public static void main(String args[]) 
     {
         int registryPort = 0;
@@ -22,7 +22,7 @@ public class RunRegistry
             System.exit((-1));
         }
 		
-		// Proper Close to Registry
+        // Proper Close to Registry
         Runtime.getRuntime().addShutdownHook(new Thread()
         {
             @Override
@@ -31,7 +31,7 @@ public class RunRegistry
                 System.out.println("");
                 try
                 {
-					UnicastRemoteObject.unexportObject(reg,true);
+                    UnicastRemoteObject.unexportObject(reg,true);
                     System.out.println("Successfully shutdown. Closing now...");
                 }
                 catch(Exception ex)
@@ -39,19 +39,18 @@ public class RunRegistry
                     System.out.println("Error when trying to execute proper shutdown. Closing anyway...");
                 }
             }
-        });
-		
+        });		
 
         try    
         {
             reg = LocateRegistry.createRegistry(registryPort);
-			if(reg != null)
-			{
-				System.out.println("Successfully started local registry. Running...");
-			}
+            if(reg != null)
+            {
+                System.out.println("Successfully started local registry. Running...");
+            }
 			
-			// Run until application is closed
-			while(true);
+            // Run until application is closed
+            while(true);
 
         }
         catch (Exception ex)
@@ -60,5 +59,5 @@ public class RunRegistry
             ex.printStackTrace();
             System.exit((-2));
         }
-	}
+    }
 }

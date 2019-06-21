@@ -10,7 +10,7 @@ public class Message implements Serializable
     public boolean isSystemMessage;
 	
     public Message(String user, String messageText, Date createDate, boolean flag)
-	{
+    {
         this.username = user;
         this.body = messageText;
         this.sendDate = createDate;
