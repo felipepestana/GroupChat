@@ -9,11 +9,11 @@ public class Message implements Serializable
     public Date receiveDate;  
     public boolean isSystemMessage;
 	
-	public Message(String user, String messageText, Date createDate, boolean flag)
+    public Message(String user, String messageText, Date createDate, boolean flag)
 	{
-		this.username = user;
-		this.body = messageText;
-		this.sendDate = createDate;
-		this.isSystemMessage = flag;
-	}
+        this.username = user;
+        this.body = messageText;
+        this.sendDate = createDate;
+        this.isSystemMessage = flag;
+    }
 }

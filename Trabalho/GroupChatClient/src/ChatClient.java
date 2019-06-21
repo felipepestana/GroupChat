@@ -50,6 +50,6 @@ public class ChatClient extends UnicastRemoteObject implements ClientInterface
             formattedMsg = formattedMsg + msgToShow.username + ": " + msgToShow.body; 
         }
 		
-		System.out.println(formattedMsg);
+        System.out.println(formattedMsg);
     }
 }

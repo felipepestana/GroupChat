@@ -62,7 +62,7 @@ public class RunServer
             System.exit(-3);
         }
         
-		// Proper Close to Server
+        // Proper Close to Server
         Runtime.getRuntime().addShutdownHook(new Thread()
         {
             @Override
@@ -135,7 +135,7 @@ class ListenThread implements Runnable
     @Override 
     public void run()
     {
-		System.out.println("Received message via multicast Socket. Broadcasting via RMI...");
+        System.out.println("Received message via multicast Socket. Broadcasting via RMI...");
         try
         {
             Registry registry = LocateRegistry.getRegistry(registryPort);

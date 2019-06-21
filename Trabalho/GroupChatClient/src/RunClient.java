@@ -1,5 +1,4 @@
 import java.io.ByteArrayInputStream;
-import java.io.Console;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
@@ -71,9 +70,9 @@ public class RunClient
         {
             try
             {
-				String messageBody = scan.nextLine();
-				System.out.print("\033[1A"); // Move cursor up
-				System.out.print("\033[2K"); // Erase current line
+                String messageBody = scan.nextLine();
+                System.out.print("\033[1A"); // Move cursor up
+                System.out.print("\033[2K"); // Erase current line
 
                 if(messageBody.equals(terminate))
                 {
@@ -99,11 +98,11 @@ public class RunClient
             Naming.unbind(rmiAddress);
             UnicastRemoteObject.unexportObject(client, false);
             server.logOff(username, sendDate);
-			System.out.println("Exiting now...");
+            System.out.println("Exiting now...");
         }
         catch(Exception ex)
         {
-			System.out.println("Error when trying to execute proper shutdown. Exiting anyway...");
+            System.out.println("Error when trying to execute proper shutdown. Exiting anyway...");
 		}
         System.exit(0);
     }    

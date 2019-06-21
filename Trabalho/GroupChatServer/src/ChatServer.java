@@ -36,7 +36,7 @@ public class ChatServer extends UnicastRemoteObject implements ServerInterface
     public synchronized int logIn(String username, Date sendDate) throws RemoteException,IOException
     {
         String body = "The user '" + username + "' has just connected to the Chat";
-		Message msg = new Message(username, body, sendDate, true);    
+        Message msg = new Message(username, body, sendDate, true);    
         System.out.println("Received login request from user " + username);
 		
         Registry registry = LocateRegistry.getRegistry(registryPort);
@@ -74,7 +74,7 @@ public class ChatServer extends UnicastRemoteObject implements ServerInterface
     {
         System.out.println("Received logoff request from user " + username);
         String body = "The user '" + username + "' has just disconnected";
-		Message msg = new Message(username, body, sendDate, true);       
+        Message msg = new Message(username, body, sendDate, true);       
         BroadcastSocket(msg);
     }
     
